@@ -17,17 +17,18 @@ const usersRouter = require('./routes/users');
 
 const { PORT = 3000 } = process.env;
 
-app.use((req, res, next) => {
+/* app.use((req, res, next) => {
   req.user = {
     _id: '612fccd38e2b7c098bdb86d5',
   };
 
   next();
-});
+}); */
 
 app.post('/signup', createUser);
 app.post('/signin', login);
 
+// app.use(auth);//works as well
 app.use('/cards', auth, cardsRouter);
 app.use('/users', auth, usersRouter);
 
@@ -60,3 +61,8 @@ process.on('SIGINT', () => {
 
 /* "message": "E11000 duplicate key error collection: aroundb.users index:
 email_1 dup key: { email: \"gdgd@dgdg.com\" }" */
+
+/* {
+    "email": "example@test.com",
+    "password": "abcdefg"
+} */

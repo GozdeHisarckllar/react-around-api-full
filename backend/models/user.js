@@ -34,12 +34,14 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
+    select: false,
   },
 });
 /* https?:\/{2}(?:w{3}\.)?[a-z0-9\-\.]+(?:\.[a-zA-z]{2,3}\b)
 (?:\/[a-zA-Z0-9\-\._~:?\/%#[\]@!$&'()*\+,;=]*)? */
 userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {
   return this.findOne({ email })
+    .select('+password')
     .then((user) => {
       if (!user) {
         throw new UnauthorizedError('Incorrect email address or password');

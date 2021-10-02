@@ -5,6 +5,6 @@
     "no-console": "off",
     "no-useless-escape": "off",
     "arrow-body-style": "off",
-    "no-unused-vars": ["error", { "allow": ["next"]}]
+    "no-unused-vars": ["error", { "argsIgnorePattern": "next" }]
   }
 }

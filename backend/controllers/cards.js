@@ -19,19 +19,52 @@ module.exports.createCard = (req, res) => {
     });
 };
 
+/* module.exports.deleteCard = (req, res) => {
+    const { cardId } = req.params;
+
+    Card.findByIdAndRemove(cardId)
+      .populate(['owner', 'likes'])
+      .then((card) => {
+        if (!card) {
+          res.status(404).send({ message: 'Card ID not found' });
+          return;
+        }
+        res.status(200).send({ data: card });
+      })
+      .catch((err) => {
+        if (err.name === 'CastError') {
+          res.status(400).send({ message: err.message });
+          return;
+        }
+        res.status(500).send({ message: err.message });
+      });
+  }; */
+
 module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
-
-  Card.findByIdAndRemove(cardId)
-    .populate(['owner', 'likes'])
+  Card.findById(cardId)
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Card ID not found' });
         return;
       }
-      res.status(200).send({ data: card });
-    })
-    .catch((err) => {
+      if (card.owner._id.equals(req.user._id)) { // node.js Buffer.equals()
+        Card.deleteOne(card) /* { _id: cardId } */
+          .populate(['owner', 'likes'])
+          .then((obj) => {
+            res.status(200).send({ data: obj });
+          })
+          .catch((err) => {
+            if (err.name === 'CastError') {
+              res.status(400).send({ message: err.message });
+              return;
+            }
+            res.status(500).send({ message: err.message });
+          });
+      } else {
+        res.status(403).send({ message: 'Forbidden' });
+      }
+    }).catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: err.message });
         return;
