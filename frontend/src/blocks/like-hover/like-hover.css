@@ -1,0 +1,7 @@
+.like-hover {
+    transition: all .4s ease-in-out;
+}
+
+.like-hover:hover {
+    opacity: .5;
+}

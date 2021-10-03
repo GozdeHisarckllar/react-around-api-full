@@ -49,10 +49,10 @@ module.exports.deleteCard = (req, res) => {
         return;
       }
       if (card.owner._id.equals(req.user._id)) { // node.js Buffer.equals()
-        Card.deleteOne(card) /* { _id: cardId } */
+        Card.deleteOne(cardId) /* { _id: cardId } */ // findByIdRemove(card)
           .populate(['owner', 'likes'])
-          .then((obj) => {
-            res.status(200).send({ data: obj });
+          .then(() => {
+            res.status(200).send({ message: 'This post has been successfully deleted' });
           })
           .catch((err) => {
             if (err.name === 'CastError') {

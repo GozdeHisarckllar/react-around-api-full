@@ -15,7 +15,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        'b06e69b88dbbe0fdfe76f90af191777318f414fb532337e5ec723dd8ec19ef99',
+        'b06e69b88dbbe0fdfe76f90af191777318f414fb532337e5ec723dd8ec19ef99', // NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret' ||| const { NODE_ENV, JWT_SECRET } = process.env;
         { expiresIn: '7d' },
       );
       res.status(200).send({ token });// Set-Cookie header
@@ -35,7 +35,7 @@ module.exports.getUserInfo = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new Error('Something went wrong');//
+        throw new Error('Something went wrong. Authorization required');//
       }
       res.status(200).send({ data: { email: user.email, _id: user._id } });
     })
@@ -78,7 +78,7 @@ module.exports.createUser = (req, res) => {
     ))
     .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.code === 11000) {
+      if (err.name === 'ValidationError' || err.code === 11000) { // duplicate error
         res.status(400).send({ message: err.message });
         return;
       }
@@ -88,7 +88,10 @@ module.exports.createUser = (req, res) => {
 
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
-
+  /* const isuser = User.findOne({ email: req.user.email });
+  if (isuser._id === req.user._id) { return; } */
+  /* const isuser = User.findOne({ _id: req.user._id });
+  if (isuser.email === req.user.email) { return; } */
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },

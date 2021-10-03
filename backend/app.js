@@ -66,3 +66,8 @@ email_1 dup key: { email: \"gdgd@dgdg.com\" }" */
     "email": "example@test.com",
     "password": "abcdefg"
 } */
+/* if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log(`App listening on port ${PORT}`);
+  }); FOR JEST https request testing
+} */

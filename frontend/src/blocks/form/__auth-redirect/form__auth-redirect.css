@@ -1,0 +1,26 @@
+.form__auth-redirect {
+    position: relative;
+    width: fit-content;
+    text-decoration: none;
+    color: #FFF;
+    align-self: center;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.21;
+}
+
+.form__auth-redirect::after {
+    content: '';
+    position: absolute;
+    top: 17px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #CCCCCC;
+    transition: all .25s ease-in-out ;
+    transform: scaleX(0);
+}
+
+.form__auth-redirect:hover::after {
+    transform: scaleX(1);
+}

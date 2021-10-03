@@ -1,0 +1,28 @@
+.profile__button_type_edit {
+    grid-area: button;
+    max-width: 24px;
+    width: 100%;
+    height: 24px;
+    margin: 15px 0 0 18px;
+    background-image: url('../../../../images/vector-pen.svg');
+    background-color: transparent;
+    background-size: 10px;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 1px solid #FFFFFF;
+}
+
+@media screen and (max-width: 840px){
+  .profile__button_type_edit {
+    margin-left: 15px;
+  }
+}
+
+@media screen and (max-width: 604px){
+  .profile__button_type_edit {
+    max-width: 18px;
+    height: 18px;
+    background-size: 8px;
+    margin: 4px 0 0 10px;
+  }
+}
