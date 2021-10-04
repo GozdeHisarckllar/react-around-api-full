@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
+const cors = require('cors');
 const auth = require('./middlewares/auth');
 const { createUser, login } = require('./controllers/users');
 
@@ -9,13 +10,14 @@ const app = express();
 app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cors({ origin: true, credentials: true }));
 
 mongoose.connect('mongodb://localhost:27017/aroundb');
 
 const cardsRouter = require('./routes/cards');
 const usersRouter = require('./routes/users');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3001 } = process.env;
 
 /* app.use((req, res, next) => {
   req.user = {
@@ -24,7 +26,6 @@ const { PORT = 3000 } = process.env;
 
   next();
 }); */
-
 app.post('/signup', createUser);
 app.post('/signin', login);
 

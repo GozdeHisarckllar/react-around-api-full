@@ -91,6 +91,8 @@ function App() {
       auth.getAccountInfo(token)
         .then((res) => {
           if (res) {
+            setCurrentUser(res.data); // added
+            console.log(res.data);// added
             handleAccountEmail(res.data.email);
             setLoggedIn(true);
           }
@@ -119,21 +121,22 @@ function App() {
     handleAccountEmail('');
     history.push('/signin');
   }
-
+/*
   useEffect(() => {
-    createApiInstance(token).getUserInfo()
+    auth.getAccountInfo(token)//createApiInstance(token).getUserInfo()
       .then((info) => {
-        setCurrentUser(info);
+        setCurrentUser(info.data);
+        console.log(info.data);
         //console.log('from userIngo' + token);
       })
       .catch((err) => console.log(err));
   }, [token]);
-
+*/
   function handleUpdateUser({name, about}) {
     setIsLoading(true);
     createApiInstance(token).setUserProfileInfo({name, about})
       .then((editedInfo) => {
-        setCurrentUser(editedInfo);
+        setCurrentUser(editedInfo.data);
       })
       .then(() => closeAllPopups())
       .catch((err) => console.log(err))
@@ -146,7 +149,7 @@ function App() {
     setIsLoading(true);
     createApiInstance(token).setProfileAvatar({avatar})
       .then((editedInfo) => {
-        setCurrentUser(editedInfo);
+        setCurrentUser(editedInfo.data);
         //console.log('from avatar'+token);
       })
       .then(() => closeAllPopups())
@@ -160,7 +163,8 @@ function App() {
     setIsLoading(true);
     createApiInstance(token).addNewCard({name, link})
       .then((newCard) => {
-        setCards([newCard, ...cards]);
+        console.log(newCard);
+        setCards([newCard.data, ...cards]);
       })
       .then(() => closeAllPopups())
       .catch((err) => console.log(err))
@@ -176,8 +180,9 @@ function App() {
 
     createApiInstance(token).changeLikeCardStatus(card._id, !isLiked)
       .then((updatedCard) => {
+        console.log(updatedCard.data);
         setCards(cards.map((initialCard) => {
-          return initialCard._id === card._id ? updatedCard : initialCard
+          return initialCard._id === card._id ? updatedCard.data : initialCard
         }));
       })
       .catch((err) => console.log(err));
@@ -201,7 +206,8 @@ function App() {
   useEffect(() => {
     createApiInstance(token).getInitialCards()
     .then((cardData) => {
-      setCards(cardData);
+      setCards(cardData.data);
+      console.log(cardData.data);
     })
     .catch((err) => console.log(err));
   }, [token]);

@@ -1,4 +1,5 @@
 const Card = require('../models/card');
+const NotFoundError = require('../errors/NotFoundError');
 
 module.exports.getAllCards = (req, res) => {
   Card.find({})
@@ -9,7 +10,12 @@ module.exports.getAllCards = (req, res) => {
 
 module.exports.createCard = (req, res) => {
   Card.create({ owner: req.user._id, ...req.body })
-    .then((card) => res.status(201).send({ data: card }))// if (!card) => check err.name throw error
+    .then((createdCard) => {
+      Card.findById(createdCard._id)
+        .populate(['owner', 'likes'])
+        .then((card) => res.status(201).send({ data: card }))
+        .catch((err) => console.log(err));
+    })// if (!card) => check err.name throw error
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: err.message });
@@ -49,8 +55,8 @@ module.exports.deleteCard = (req, res) => {
         return;
       }
       if (card.owner._id.equals(req.user._id)) { // node.js Buffer.equals()
-        Card.deleteOne(cardId) /* { _id: cardId } */ // findByIdRemove(card)
-          .populate(['owner', 'likes'])
+        Card.deleteOne(card) /* { _id: cardId } */ // findByIdRemove(card)
+          // .populate(['owner', 'likes'])
           .then(() => {
             res.status(200).send({ message: 'This post has been successfully deleted' });
           })
@@ -98,7 +104,7 @@ module.exports.likeCard = (req, res) => {
     });
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(
@@ -109,16 +115,19 @@ module.exports.dislikeCard = (req, res) => {
     .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Card ID not found' });
+        next(new NotFoundError('Card ID not found'));
         return;
       }
       res.status(200).send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: err.message });
+        next(new Error(''));
         return;
+        /* res.status(400).send({ message: err.message });
+        return; */
       }
-      res.status(500).send({ message: err.message });
+      next(new Error('dff'));
+      // res.status(500).send({ message: err.message });
     });
 };

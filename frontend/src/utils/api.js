@@ -106,8 +106,9 @@ class Api {
   //function(token ) => return new Api(baseurl, token) func(token).getAllCards
   const createApiInstance = (token) => {
     return new Api({
-      baseUrl: "https://MY_DOMAIN_around.nomoreparties.co/",// auth token is not compatible with this api "https://around.nomoreparties.co/v1/group-12"
+      baseUrl: "http://localhost:3001",// auth token is not compatible with this api "https://around.nomoreparties.co/v1/group-12"
       headers: {
+         mode:'no-cors',
         'Accept': 'application/json',
         'Content-Type': 'application/json',
         'Authorization' : `Bearer ${token}`

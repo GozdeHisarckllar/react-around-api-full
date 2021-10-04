@@ -37,7 +37,16 @@ module.exports.getUserInfo = (req, res, next) => {
       if (!user) {
         throw new Error('Something went wrong. Authorization required');//
       }
-      res.status(200).send({ data: { email: user.email, _id: user._id } });
+      res.status(200).send({
+        data:
+        {
+          _id: user._id,
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
+          email: user.email,
+        },
+      });
     })
     .catch(next);
 };
@@ -86,7 +95,7 @@ module.exports.createUser = (req, res) => {
     });
 };
 
-module.exports.updateProfile = (req, res) => {
+module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
   /* const isuser = User.findOne({ email: req.user.email });
   if (isuser._id === req.user._id) { return; } */
@@ -109,7 +118,10 @@ module.exports.updateProfile = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        res.status(400).send({ message: err.message });
+        const er = new Error('error next');
+        er.statusCode = 400;
+        next(er);
+        /* res.status(400).send({ message: err.message }); */
         return;
       }
       res.status(500).send({ message: err.message });
