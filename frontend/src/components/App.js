@@ -57,11 +57,15 @@ function App() {
       })
       .catch((err) => {
         setIsAuthSuccess(false);
-        if (err === 400) {
+        setAuthErrorMessage(err.message)
+        /*if (err === 400) {
+          setAuthErrorMessage('Email address or password provided in the invalid format')
+        } else if (err === 409) {
           setAuthErrorMessage('User with this email address already exists.');
-        } else {
-          setAuthErrorMessage('Oops, something went wrong! Please try again.');
         }
+        else {
+          setAuthErrorMessage('Oops, something went wrong! Please try again.');
+        }*/
       })
       .finally(() => setIsInfoTooltipOpen(true));
   }
@@ -75,11 +79,14 @@ function App() {
       })
       .catch((err) => {
         setIsAuthSuccess(false);
-        if (err === 401) {
+        setAuthErrorMessage(err.message);
+        /* if (err === 400) {
+          setAuthErrorMessage('Email address or password provided in the invalid format')
+        } else if (err === 401) {
           setAuthErrorMessage('Incorrect email address or password');
         } else {
           setAuthErrorMessage('Oops, something went wrong! Please try again.');
-        }
+        }*/
         setIsInfoTooltipOpen(true);
       });
   }
@@ -94,6 +101,13 @@ function App() {
             setCurrentUser(res.data); // added
             console.log(res.data);// added
             handleAccountEmail(res.data.email);
+            
+            createApiInstance(token).getInitialCards()
+              .then((cardData) => {
+                setCards(cardData.data);
+                console.log(cardData.data);//
+              })
+              .catch((err) => console.log(`Error: ${err.message}`));
             setLoggedIn(true);
           }
         })
@@ -101,11 +115,13 @@ function App() {
           history.push('/');
         })
         .catch((err) => {
-          if (err === 400) {
+          /*if (err === 400) {
             console.log('Token not provided or provided in the wrong format');
-          } else if (err === 401) {
-            console.log('The provided token is invalid');
-          }
+          } *//*if (err === 401) {
+            console.log('The provided token is invalid. Authoriz');
+          } else {}*/
+          console.log(`Error: ${err.message}`);
+          
         });
     }
   }, [history, token]);
@@ -139,7 +155,7 @@ function App() {
         setCurrentUser(editedInfo.data);
       })
       .then(() => closeAllPopups())
-      .catch((err) => console.log(err))
+      .catch((err) => console.log(`Error: ${err.message}`))
       .finally(() => {
         setIsLoading(false);
       });
@@ -150,10 +166,9 @@ function App() {
     createApiInstance(token).setProfileAvatar({avatar})
       .then((editedInfo) => {
         setCurrentUser(editedInfo.data);
-        //console.log('from avatar'+token);
       })
       .then(() => closeAllPopups())
-      .catch((err) => console.log(err))
+      .catch((err) => console.log(`Error: ${err.message}`))
       .finally(() => {
         setIsLoading(false);
       });
@@ -164,10 +179,10 @@ function App() {
     createApiInstance(token).addNewCard({name, link})
       .then((newCard) => {
         console.log(newCard);
-        setCards([newCard.data, ...cards]);
+        setCards([...cards, newCard.data]);
       })
       .then(() => closeAllPopups())
-      .catch((err) => console.log(err))
+      .catch((err) => console.log(`Error: ${err.message}`))
       .finally(() => {
         setIsLoading(false);
       });
@@ -185,7 +200,7 @@ function App() {
           return initialCard._id === card._id ? updatedCard.data : initialCard
         }));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(`Error: ${err.message}`));
   }
 
   function handleCardDelete(card) {
@@ -197,20 +212,20 @@ function App() {
         }))
       })
       .then(() => closeAllPopups())
-      .catch((err) => console.log(err))
+      .catch((err) => console.log(`Error: ${err.message}`))
       .finally(() => {
         setIsLoading(false);
       });
   }
 
-  useEffect(() => {
+  /*useEffect(() => {
     createApiInstance(token).getInitialCards()
     .then((cardData) => {
       setCards(cardData.data);
       console.log(cardData.data);
     })
     .catch((err) => console.log(err));
-  }, [token]);
+  }, [token]);*/
 
   useEffect(() => {
     const closeByEscape = (e) => {

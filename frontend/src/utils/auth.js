@@ -5,7 +5,11 @@ const handleResponse = (res) => {
     return res.json();
   }
 
-  return Promise.reject(res.status);
+  //return Promise.reject(res);
+  return res.json()
+    .then((res) => { 
+      throw new Error(res.message);
+    });
 }
 
 export const register = (password, email) => {

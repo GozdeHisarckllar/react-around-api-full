@@ -14,7 +14,7 @@ const AuthForm = (props) => {
         </label>
         <label className="form__label">
           <input type="password" className={`form__item form__item_el_password ${props.errors['password']? inputElementErrorClassName:''}`} 
-            value={props.values['password'] || ''} onChange={props.onChange} id="password-input" name="password" placeholder="Password" minLength="6" maxLength="20" required/>
+            value={props.values['password'] || ''} onChange={props.onChange} id="password-input" name="password" placeholder="Password" minLength="6" maxLength="30" required/>
           <span className={`form__input-error password-input-error ${props.errors['password']? errorClassName:''}`}>{props.errors['password']}</span>
         </label>
             <button type="submit" className={`form__button form__button_type_auth ${!props.isFormValid?'form__button_disabled':''}`} 

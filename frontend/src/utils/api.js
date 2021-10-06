@@ -9,7 +9,10 @@ class Api {
         return res.json();
       }
   
-      return Promise.reject(res.status);
+      return res.json()
+      .then((res) => { 
+        throw new Error(res.message);
+      });
     }
   
     getUserInfo() {
@@ -108,7 +111,6 @@ class Api {
     return new Api({
       baseUrl: "http://localhost:3001",// auth token is not compatible with this api "https://around.nomoreparties.co/v1/group-12"
       headers: {
-         mode:'no-cors',
         'Accept': 'application/json',
         'Content-Type': 'application/json',
         'Authorization' : `Bearer ${token}`

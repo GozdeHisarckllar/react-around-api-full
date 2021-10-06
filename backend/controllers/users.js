@@ -1,7 +1,10 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-// const NotFoundError = require('../errors/NotFoundError');
+const NotFoundError = require('../errors/NotFoundError');
 // const UnauthorizedError = require('../errors/UnauthorizedError');
+// const UnauthorizedError = require('../errors/UnauthorizedError');
+const BadRequestError = require('../errors/BadRequestError');
+const ConflictError = require('../errors/ConflictError');
 const User = require('../models/user');
 // const UnauthorizedError = require('../errors/UnauthorizedError');
 /* Optionally, if your project has controllers for editing a profile
@@ -35,7 +38,8 @@ module.exports.getUserInfo = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new Error('Something went wrong. Authorization required');//
+        next(new NotFoundError('User ID not found'));
+        return;
       }
       res.status(200).send({
         data:
@@ -51,13 +55,13 @@ module.exports.getUserInfo = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getAllUsers = (req, res) => {
+module.exports.getAllUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.status(200).send({ data: users }))
-    .catch((err) => res.status(500).send({ message: err.message }));// server error
+    .catch(next);
 };
 
-module.exports.findUser = (req, res) => { // del
+/* module.exports.findUser = (req, res) => { // del
   const { userId } = req.params;
 
   User.findById(userId)
@@ -70,14 +74,13 @@ module.exports.findUser = (req, res) => { // del
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: err.message });
-        return;
+        next(new BadRequestError({ message: err.message }));
       }
-      res.status(500).send({ message: err.message });
+      next(err);
     });
-};
+}; */
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create(
       {
@@ -87,13 +90,15 @@ module.exports.createUser = (req, res) => {
     ))
     .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.code === 11000) { // duplicate error
-        res.status(400).send({ message: err.message });
-        return;
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Email address or password provided in the invalid format'));
+      } else if (err.code === 11000) {
+        next(new ConflictError('User with this email address already exists.'));
+      } else {
+        next(err);
       }
-      res.status(500).send({ message: err.message });
     });
-};
+};/* || err.code === 11000 */
 
 module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
@@ -111,24 +116,22 @@ module.exports.updateProfile = (req, res, next) => {
   )
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'User ID not found' });
+        next(new NotFoundError('User ID not found'));
         return;
       }
       res.status(200).send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        const er = new Error('error next');
-        er.statusCode = 400;
-        next(er);
+      if (err.name === 'ValidationError'/* || err.name === 'CastError' */) {
+        next(new BadRequestError('\'name\' or \'about\' field provided in the invalid format'));
         /* res.status(400).send({ message: err.message }); */
         return;
       }
-      res.status(500).send({ message: err.message });
+      next(err);
     });
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(
@@ -141,16 +144,16 @@ module.exports.updateAvatar = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'User ID not found' });
+        next(new NotFoundError('User ID not found'));
         return;
       }
       res.status(200).send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        res.status(400).send({ message: err.message });
+      if (err.name === 'ValidationError' /* || err.name === 'CastError' */) {
+        next(new BadRequestError('\'link\' field provided in the invalid format'));
         return;
       }
-      res.status(500).send({ message: err.message });
+      next(err);
     });
 };

@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
 const cors = require('cors');
+const { celebrate, Joi, errors } = require('celebrate');
 const auth = require('./middlewares/auth');
 const { createUser, login } = require('./controllers/users');
 
@@ -10,15 +11,19 @@ const app = express();
 app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cors({ origin: true, credentials: true }));
+// app.use(cors({ origin: true, credentials: true }));
+
+// include these before other routes
+app.use(cors());
+app.options('*', cors()); // enable requests for all routes
 
 mongoose.connect('mongodb://localhost:27017/aroundb');
 
 const cardsRouter = require('./routes/cards');
-const usersRouter = require('./routes/users');
+const { usersRouter } = require('./routes/users');
 
 const { PORT = 3001 } = process.env;
-
+// "C:\Program Files\MongoDB\Server\4.2\bin\mongo.exe"
 /* app.use((req, res, next) => {
   req.user = {
     _id: '612fccd38e2b7c098bdb86d5',
@@ -26,8 +31,25 @@ const { PORT = 3001 } = process.env;
 
   next();
 }); */
-app.post('/signup', createUser);
-app.post('/signin', login);
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Server will crash now');
+  }, 0);
+});
+
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(6).max(30),
+  }),
+}), createUser);
+
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(6).max(30),
+  }),
+}), login);
 
 // app.use(auth);//works as well
 app.use('/cards', auth, cardsRouter);
@@ -37,9 +59,11 @@ app.use((req, res) => {
   res.status(404).send({ message: 'Requested resource not found' });
 });/// delete
 
+app.use(errors());
+
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
-
+  console.log(err);
   res
     .status(statusCode)
     .send({

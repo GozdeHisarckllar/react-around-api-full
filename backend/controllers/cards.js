@@ -1,27 +1,29 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/NotFoundError');
+const BadRequestError = require('../errors/BadRequestError');
+const ForbiddenError = require('../errors/ForbiddenError');
 
-module.exports.getAllCards = (req, res) => {
+module.exports.getAllCards = (req, res, next) => {
   Card.find({})
     .populate(['owner', 'likes'])
     .then((cards) => res.status(200).send({ data: cards }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   Card.create({ owner: req.user._id, ...req.body })
     .then((createdCard) => {
       Card.findById(createdCard._id)
         .populate(['owner', 'likes'])
         .then((card) => res.status(201).send({ data: card }))
-        .catch((err) => console.log(err));
+        .catch(next);
     })// if (!card) => check err.name throw error
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: err.message });
+        next(new BadRequestError('\'name\' or \'link\' field provided in the invalid format'));
         return;
       }
-      res.status(500).send({ message: err.message });
+      next(err);
     });
 };
 
@@ -46,40 +48,34 @@ module.exports.createCard = (req, res) => {
       });
   }; */
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Card ID not found' });
+        next(new NotFoundError('Card ID not found'));
         return;
       }
       if (card.owner._id.equals(req.user._id)) { // node.js Buffer.equals()
-        Card.deleteOne(card) /* { _id: cardId } */ // findByIdRemove(card)
+        Card.deleteOne(card) /* { _id: cardId } */ // findByIdAndRemove(card)
           // .populate(['owner', 'likes'])
           .then(() => {
             res.status(200).send({ message: 'This post has been successfully deleted' });
           })
-          .catch((err) => {
-            if (err.name === 'CastError') {
-              res.status(400).send({ message: err.message });
-              return;
-            }
-            res.status(500).send({ message: err.message });
-          });
+          .catch(next);
       } else {
-        res.status(403).send({ message: 'Forbidden' });
+        next(new ForbiddenError('Forbidden resource. Authorization required'));
       }
     }).catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: err.message });
+        next(new BadRequestError('Incorrect ID'));
         return;
       }
-      res.status(500).send({ message: err.message });
+      next(err);
     });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(
@@ -90,17 +86,17 @@ module.exports.likeCard = (req, res) => {
     .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Card ID not found' });
+        next(new NotFoundError('Card ID not found'));
         return;
       }
       res.status(200).send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: err.message });
+        next(new BadRequestError('Incorrect ID'));
         return;
       }
-      res.status(500).send({ message: err.message });
+      next(err);
     });
 };
 
@@ -122,12 +118,9 @@ module.exports.dislikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new Error(''));
+        next(new BadRequestError('Incorrect ID'));
         return;
-        /* res.status(400).send({ message: err.message });
-        return; */
       }
-      next(new Error('dff'));
-      // res.status(500).send({ message: err.message });
+      next(err);
     });
 };
