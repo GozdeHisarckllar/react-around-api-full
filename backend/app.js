@@ -76,10 +76,3 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
 });
-
-/* To ensure that if there is still some process running in the background
- when shutting down the server, it is terminated. Otherwise, it
- can cause an 'error ELIFECYCLE'. */
-process.on('SIGINT', () => {
-  process.exit();
-});
