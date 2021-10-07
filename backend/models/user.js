@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/avatar_1604080799.jpg',
     validate: {
-      validator: (v) => /https?:\/{2}(?:w{3}\.)?[a-z0-9\-\.]+(?:\.com\b|\.net\b)(?:\/[a-zA-Z0-9\-\._~:?\/%#[\]@!$&'()*\+,;=]*)?/.test(v),
+      validator: (v) => /https?:\/{2}(?:w{3}\.)?[a-z0-9\-\.]+(?:\.[a-z]{2,3}\b)(?:\/[a-zA-Z0-9\-\._~:?\/%#[\]@!$&'()*\+,;=]*)?/.test(v),
       message: (props) => `${props.value} is not a valid link!`,
     },
   },
@@ -37,8 +37,7 @@ const userSchema = new mongoose.Schema({
     select: false,
   },
 });
-/* https?:\/{2}(?:w{3}\.)?[a-z0-9\-\.]+(?:\.[a-zA-z]{2,3}\b)
-(?:\/[a-zA-Z0-9\-\._~:?\/%#[\]@!$&'()*\+,;=]*)? */
+
 userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {
   return this.findOne({ email })
     .select('+password')

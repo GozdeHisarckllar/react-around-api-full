@@ -12,7 +12,7 @@ module.exports = (req, res, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, 'b06e69b88dbbe0fdfe76f90af191777318f414fb532337e5ec723dd8ec19ef99');// secret key -> try getUserinfo autoriz token headers
+    payload = jwt.verify(token, 'b06e69b88dbbe0fdfe76f90af191777318f414fb532337e5ec723dd8ec19ef99');
   } catch (err) {
     return res.status(401).send({ message: 'Invalid token. Authorization required' });
   }
@@ -21,5 +21,3 @@ module.exports = (req, res, next) => {
 
   next();
 };
-
-// signup -->signin --> token --> headers{authori beare token }

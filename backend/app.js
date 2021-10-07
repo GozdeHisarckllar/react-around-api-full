@@ -5,37 +5,34 @@ const cors = require('cors');
 const { celebrate, Joi, errors } = require('celebrate');
 const auth = require('./middlewares/auth');
 const { createUser, login } = require('./controllers/users');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const app = express();
 
 app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-// app.use(cors({ origin: true, credentials: true }));
 
-// include these before other routes
 app.use(cors());
-app.options('*', cors()); // enable requests for all routes
+app.options('*', cors());
 
 mongoose.connect('mongodb://localhost:27017/aroundb');
 
 const cardsRouter = require('./routes/cards');
-const { usersRouter } = require('./routes/users');
+const usersRouter = require('./routes/users');
+const NotFoundError = require('./errors/NotFoundError');
 
 const { PORT = 3001 } = process.env;
-// "C:\Program Files\MongoDB\Server\4.2\bin\mongo.exe"
-/* app.use((req, res, next) => {
-  req.user = {
-    _id: '612fccd38e2b7c098bdb86d5',
-  };
 
-  next();
-}); */
+app.use(requestLogger);
+
 app.get('/crash-test', () => {
   setTimeout(() => {
     throw new Error('Server will crash now');
   }, 0);
 });
+
+// // // // Routes // // // //
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
@@ -51,13 +48,16 @@ app.post('/signin', celebrate({
   }),
 }), login);
 
-// app.use(auth);//works as well
 app.use('/cards', auth, cardsRouter);
 app.use('/users', auth, usersRouter);
 
-app.use((req, res) => {
-  res.status(404).send({ message: 'Requested resource not found' });
-});/// delete
+// // // // // // // // // //
+
+app.use((req, res, next) => {
+  next(new NotFoundError('Requested resource not found'));
+});
+
+app.use(errorLogger);
 
 app.use(errors());
 
@@ -68,7 +68,7 @@ app.use((err, req, res, next) => {
     .status(statusCode)
     .send({
       message: statusCode === 500
-        ? 'An error has occurred on the server' /* 'Oops, something went wrong with the server! Please try again later.' */
+        ? 'An error has occurred on the server'
         : message,
     });
 });
@@ -78,21 +78,8 @@ app.listen(PORT, () => {
 });
 
 /* To ensure that if there is still some process running in the background
- when shutting down the server with ctrl+C, it is terminated. Otherwise, it
+ when shutting down the server, it is terminated. Otherwise, it
  can cause an 'error ELIFECYCLE'. */
 process.on('SIGINT', () => {
   process.exit();
 });
-
-/* "message": "E11000 duplicate key error collection: aroundb.users index:
-email_1 dup key: { email: \"gdgd@dgdg.com\" }" */
-
-/* {
-    "email": "example@test.com",
-    "password": "abcdefg"
-} */
-/* if (process.env.NODE_ENV !== "test") {
-  app.listen(PORT, () => {
-    console.log(`App listening on port ${PORT}`);
-  }); FOR JEST https request testing
-} */

@@ -17,7 +17,7 @@ module.exports.createCard = (req, res, next) => {
         .populate(['owner', 'likes'])
         .then((card) => res.status(201).send({ data: card }))
         .catch(next);
-    })// if (!card) => check err.name throw error
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('\'name\' or \'link\' field provided in the invalid format'));
@@ -27,44 +27,21 @@ module.exports.createCard = (req, res, next) => {
     });
 };
 
-/* module.exports.deleteCard = (req, res) => {
-    const { cardId } = req.params;
-
-    Card.findByIdAndRemove(cardId)
-      .populate(['owner', 'likes'])
-      .then((card) => {
-        if (!card) {
-          res.status(404).send({ message: 'Card ID not found' });
-          return;
-        }
-        res.status(200).send({ data: card });
-      })
-      .catch((err) => {
-        if (err.name === 'CastError') {
-          res.status(400).send({ message: err.message });
-          return;
-        }
-        res.status(500).send({ message: err.message });
-      });
-  }; */
-
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        next(new NotFoundError('Card ID not found'));
-        return;
+        throw (new NotFoundError('Card ID not found'));
       }
-      if (card.owner._id.equals(req.user._id)) { // node.js Buffer.equals()
-        Card.deleteOne(card) /* { _id: cardId } */ // findByIdAndRemove(card)
-          // .populate(['owner', 'likes'])
+      if (card.owner._id.equals(req.user._id)) {
+        Card.deleteOne(card)
           .then(() => {
             res.status(200).send({ message: 'This post has been successfully deleted' });
           })
           .catch(next);
       } else {
-        next(new ForbiddenError('Forbidden resource. Authorization required'));
+        throw (new ForbiddenError('Forbidden resource. Authorization required'));
       }
     }).catch((err) => {
       if (err.name === 'CastError') {
@@ -86,8 +63,7 @@ module.exports.likeCard = (req, res, next) => {
     .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
-        next(new NotFoundError('Card ID not found'));
-        return;
+        throw new NotFoundError('Card ID not found');
       }
       res.status(200).send({ data: card });
     })
@@ -111,8 +87,7 @@ module.exports.dislikeCard = (req, res, next) => {
     .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
-        next(new NotFoundError('Card ID not found'));
-        return;
+        throw new NotFoundError('Card ID not found');
       }
       res.status(200).send({ data: card });
     })

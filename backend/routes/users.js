@@ -1,20 +1,12 @@
 const usersRouter = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
-const isURL = require('validator/lib/isURL');
+const validateURL = require('../helpers/validateUrl');
 const {
   getAllUsers,
-  // findUser,
   updateProfile,
   updateAvatar,
   getUserInfo,
 } = require('../controllers/users');
-
-const validateURL = (string) => {
-  if (!isURL(string)) {
-    throw new Error('The URL is invalid');
-  }
-  return string;
-};
 
 usersRouter.get('/', celebrate({
   headers: Joi.object().keys({
@@ -22,9 +14,6 @@ usersRouter.get('/', celebrate({
   }).unknown(true),
 }), getAllUsers);
 
-// usersRouter.get('/:userId', findUser);
-
-// usersRouter.post('/', createUser); del
 usersRouter.get('/me', celebrate({
   headers: Joi.object().keys({
     authorization: Joi.string().required(),
@@ -50,7 +39,4 @@ usersRouter.patch('/me/avatar', celebrate({
   }),
 }), updateAvatar);
 
-module.exports = {
-  usersRouter,
-  validateURL,
-};
+module.exports = usersRouter;
