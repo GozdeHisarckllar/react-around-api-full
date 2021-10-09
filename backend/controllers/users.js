@@ -3,9 +3,8 @@ const jwt = require('jsonwebtoken');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const ConflictError = require('../errors/ConflictError');
+const { devKey } = require('../utils/constants');
 const User = require('../models/user');
-
-const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
@@ -14,7 +13,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'b06e69b88dbbe0fdfe76f90af191777318f414fb532337e5ec723dd8ec19ef99',
+        process.env.NODE_ENV === 'production' ? process.env.JWT_SECRET : devKey,
         { expiresIn: '7d' },
       );
       res.status(200).send({ token });
