@@ -1,0 +1,16 @@
+.auth-container {
+    max-width: 358px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    padding: 60px 0 80px;
+}
+
+@media screen and (max-width: 604px){
+    .auth-container {
+      max-width: 260px;
+      padding: 40px 0 42px;
+    }
+  }
