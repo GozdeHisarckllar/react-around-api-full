@@ -41,7 +41,7 @@ module.exports.deleteCard = (req, res, next) => {
           })
           .catch(next);
       } else {
-        throw (new ForbiddenError('Forbidden resource. Authorization required'));
+        throw (new ForbiddenError('Forbidden to delete another user\'s post'));
       }
     }).catch((err) => {
       if (err.name === 'CastError') {
