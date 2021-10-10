@@ -7,7 +7,7 @@ const auth = require('./middlewares/auth');
 const { createUser, login } = require('./controllers/users');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const handleError = require('./middlewares/handleError');
-const rateLimiter = require('./utils/rateLimiter');
+const rateLimiter = require('./middlewares/rateLimiter');
 require('dotenv').config();
 
 const app = express();
