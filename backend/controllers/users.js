@@ -55,7 +55,11 @@ module.exports.createUser = (req, res, next) => {
         password: hash,
       },
     ))
-    .then((user) => res.status(201).send({ data: user }))
+    .then((createdUser) => {
+      User.findById(createdUser._id)
+        .then((user) => res.status(201).send({ data: user }))
+        .catch(next);
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Email address or password provided in the invalid format'));

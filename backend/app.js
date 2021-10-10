@@ -6,16 +6,21 @@ const { celebrate, Joi, errors } = require('celebrate');
 const auth = require('./middlewares/auth');
 const { createUser, login } = require('./controllers/users');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const handleError = require('./middlewares/handleError');
+const rateLimiter = require('./utils/rateLimiter');
 require('dotenv').config();
 
 const app = express();
 
 app.use(helmet());
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use(cors());
 app.options('*', cors());
+
+app.use(rateLimiter);
 
 mongoose.connect('mongodb://localhost:27017/aroundb');
 
@@ -63,15 +68,7 @@ app.use(errorLogger);
 app.use(errors());
 
 app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-  console.log(err);
-  res
-    .status(statusCode)
-    .send({
-      message: statusCode === 500
-        ? 'An error has occurred on the server'
-        : message,
-    });
+  handleError(err, res);
 });
 
 app.listen(PORT, () => {
