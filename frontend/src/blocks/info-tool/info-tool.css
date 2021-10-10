@@ -1,0 +1,15 @@
+@import url('./__icon/info-tool__icon.css');
+@import url('./__text/info-tool__text.css');
+
+.info-tool {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 36px;
+}
+
+@media screen and (max-width: 604px){
+    .info-tool {
+        padding: 50px 18px;
+    }
+}

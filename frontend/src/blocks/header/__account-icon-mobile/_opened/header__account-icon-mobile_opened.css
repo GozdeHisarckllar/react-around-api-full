@@ -1,0 +1,6 @@
+.header__account-icon-mobile_opened {
+    width: 30px;
+    height: 30px;
+    background-image: url('../../../../images/vector-plus.svg');
+    transform: rotate(-45deg);
+}
