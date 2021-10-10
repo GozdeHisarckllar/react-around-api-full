@@ -1,0 +1,10 @@
+.header__account-info {
+    display: flex;
+    margin-left: auto;
+}
+
+@media screen and (max-width: 604px){
+    .header__account-info {
+        display: none;
+    }
+}
