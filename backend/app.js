@@ -20,8 +20,6 @@ app.use(express.json());
 app.use(cors());
 app.options('*', cors());
 
-app.use(rateLimiter);
-
 mongoose.connect('mongodb://localhost:27017/aroundb');
 
 const cardsRouter = require('./routes/cards');
@@ -31,6 +29,8 @@ const NotFoundError = require('./errors/NotFoundError');
 const { PORT = 3000 } = process.env;
 
 app.use(requestLogger);
+
+app.use(rateLimiter);
 
 app.get('/crash-test', () => {
   setTimeout(() => {
