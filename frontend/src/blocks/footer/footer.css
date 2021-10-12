@@ -1,0 +1,38 @@
+@import url('./__copyright/footer__copyright.css');
+
+.footer {
+    max-width: calc(100% - 400px);
+    margin: 0 auto;
+    padding: 68px 0 60px;
+}
+
+@media screen and (max-width: 1279px){
+  .footer {
+    max-width: calc(100% - 250px);
+  }
+}
+
+@media screen and (max-width: 1144px){
+  .footer {
+    max-width: calc(100% - 200px);
+  }
+}
+
+@media screen and (max-width: 1024px){
+  .footer {
+    max-width: calc(100% - 184px);
+  }
+}
+  
+@media screen and (max-width: 768px){
+  .footer {
+    max-width: calc(100% - 80px);
+  }
+}
+
+@media screen and (max-width: 675px){
+  .footer {
+    max-width: calc(100% - 38px);
+    padding: 50px 0 36px;
+  }
+}

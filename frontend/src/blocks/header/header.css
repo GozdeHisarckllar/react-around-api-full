@@ -1,0 +1,52 @@
+@import url('./__main/header__main.css');
+@import url('./__vector-logo/header__vector-logo.css');
+@import url('./__account-state/header__account-state.css');
+@import url('./__account-info/header__account-info.css');
+@import url('./__account-email/header__account-email.css');
+@import url('./__account-info/_mobile/header__account-info_mobile.css');
+@import url('./__account-state/_mobile/header__account-state_mobile.css');
+@import url('./__account-state/_desktop/header__account-state_desktop.css');
+@import url('./__account-icon-mobile/header__account-icon-mobile.css');
+@import url('./__account-info/_opened/header__account-info_opened.css');
+@import url('./__account-email/_opened/header__account-email_opened.css');
+@import url('./__account-state/_opened/header__account-state_opened.css');
+@import url('./__account-icon-mobile/_opened/header__account-icon-mobile_opened.css');
+
+/*.header {
+    display: flex;
+    max-width: calc(100% - 400px);
+    margin: 0 auto;
+    padding: 45px 0 0;
+    border-bottom: 1px solid rgb(84,84,84, .7);
+}
+
+@media screen and (max-width: 1279px){
+  .header {
+    max-width: calc(100% - 250px);
+  }
+}
+
+@media screen and (max-width: 1144px){
+  .header {
+    max-width: calc(100% - 200px);
+  }
+}
+
+@media screen and (max-width: 1024px){
+  .header {
+    max-width: calc(100% - 184px);
+  }
+}
+
+@media screen and (max-width: 768px){
+  .header {
+    max-width: calc(100% - 80px);
+  }
+}
+
+@media screen and (max-width: 604px){
+  .header {
+    max-width: 100%;
+    padding-top: 28px;
+  }
+}*/
